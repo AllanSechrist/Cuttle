@@ -16,3 +16,11 @@ export async function DrawCards(deck_id: string, count="1"):Promise<DrawResponse
 
   return data
 }
+
+export async function ShuffleDeck(deck:string, remaining=true):Promise<Deck> {
+  // if remaining is set to false, shuffle ALL cards back into the deck.
+  const res = await fetch(`${BASE_URL}/${deck}/shuffle/?remaining=${remaining}`)
+  const data = await (res.json()) as Deck;
+
+  return data
+}

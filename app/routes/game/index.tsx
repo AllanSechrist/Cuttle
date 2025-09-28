@@ -1,5 +1,5 @@
-import { CreateNewDeck } from "~/game_logic/deck";
-import { DrawCards } from "~/game_logic/deck";
+import { CreateNewDeck } from "~/game_logic/cards/deck";
+import { DrawCards } from "~/game_logic/cards/deck";
 import type { Deck } from "~/types";
 import type { PlayingCards } from "~/types";
 import Card from "~/components/Card";
