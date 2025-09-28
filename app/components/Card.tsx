@@ -1,5 +1,5 @@
-import type { PlayingCard } from "~/types";
-const Card = ({ card }: { card: PlayingCard }) => {
+import type { PlayingCards } from "~/types";
+const Card = ({ card }: { card: PlayingCards }) => {
   return (
     <div>
       <div className="w-24 h-36">

@@ -1,4 +1,4 @@
-export type PlayingCard = {
+export type PlayingCards = {
   code: string;
   image: string;
   images: object;
@@ -9,7 +9,7 @@ export type PlayingCard = {
 export type DrawResponse = {
   success: boolean,
   deck_id: string,
-  cards: PlayingCard[],
+  cards: PlayingCards[],
   remaining: number
 }
 
@@ -18,4 +18,18 @@ export type Deck = {
   deck_id: string;
   shuffled: boolean;
   remaining: number;
+}
+
+export type Pile = {
+  remaining: number;
+  cards?: PlayingCards[];
+}
+
+export type Piles = Record<string, Pile>;
+
+export type PileResponse = {
+  success: boolean,
+  deck_id: string,
+  remaining: number,
+  piles: Piles
 }
