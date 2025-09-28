@@ -3,7 +3,7 @@ import type { Deck, DrawResponse } from "~/types";
 const BASE_URL = import.meta.env.VITE_CARD_API_BASE;
 
 export async function NewDeck():Promise<Deck> {
-  const res = await fetch(`${BASE_URL}/new`)
+  const res = await fetch(`${BASE_URL}/new/shuffle/?deck_count=1`)
   const data = await (res.json()) as Deck;
 
   return data
