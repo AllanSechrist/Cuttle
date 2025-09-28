@@ -6,6 +6,13 @@ export type PlayingCard = {
   suit: string;
 }
 
+export type DrawResponse = {
+  success: boolean,
+  deck_id: string,
+  cards: PlayingCard[],
+  remaining: number
+}
+
 export type Deck = {
   success: boolean;
   deck_id: string;
