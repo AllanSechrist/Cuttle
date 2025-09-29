@@ -1,5 +1,5 @@
 import { DrawCards } from "./deck";
-import type { PileResponse, DrawResponse, PlayingCards, Pile } from "~/types";
+import type { PileResponse, PlayingCards, } from "~/types";
 const BASE_URL = import.meta.env.VITE_CARD_API_BASE;
 // a pile is a stack of cards that is NOT the deck
 // a pile can be used for player hands, discard piles etc, etc.
@@ -9,18 +9,20 @@ export async function AddToPile(
   // This function will also create a new pile if [name] does not already exist.
   deck_id:string,
   name: string,
-  cardData: PlayingCards[]
-): Promise<Pile> {
-  const cards = cardData.join(",");
+  cardsData: PlayingCards[]
+): Promise<PileResponse> {
+  // extract card object code value then convert that list into a string.
+  const cards = cardsData.map(card => card.code)
+  const cardCodes = cards.join(",");
   const res = await fetch(
-    `${BASE_URL}/${deck_id}/pile/${name}/add/?cards=${cards}`
+    `${BASE_URL}/${deck_id}/pile/${name}/add/?cards=${cardCodes}`
   );
   const data = (await res.json()) as PileResponse;
   // change to return a pile
   return data;
 }
 
-export async function GetPileList(
+export async function GetPileCards(
   deck_id: string,
   name: string
 ): Promise<PlayingCards[]> {
