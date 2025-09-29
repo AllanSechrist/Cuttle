@@ -5,8 +5,10 @@ import type { PlayingCards } from "~/types";
 import Card from "~/components/Card";
 import Button from "~/components/Button";
 import { useState } from "react";
+import { useLocalStorage } from "~/components/hooks/useLocalStorage";
 
 const GamePage = () => {
+  const [deckID, setDeckID] = useLocalStorage("deckID", "")
   const [deck, setDeck] = useState<Deck | null>(null);
   const [playerOneHand, setPlayerOneHand] = useState<PlayingCards[]>([]);
   const [playerTwoHand, setPlayerTwoHand] = useState<PlayingCards[]>([]);
@@ -31,18 +33,16 @@ const GamePage = () => {
     },
   ];
 
-  // const handleNewDeck = async () => {
-  //   const data = await CreateNewDeck();
-  //   setDeck(data);
-  // };
-
-  // const handleDrawCard = async () => {
-  //   if (deck !== null) {
-  //     const data = await DrawCards(deck.deck_id);
-  //     const drawnCard = data.cards[0];
-  //     setCard(drawnCard);
+  // const testLocalStorage = async () => {
+  //   if (deckID === "") {
+  //     const data = await CreateNewDeck();
+  //     setDeck(data)
+  //     setDeckID(data.deck_id)
+  //     console.log(`Saved New Deck ID ${deckID}`)
+  //   } else {
+  //     console.log(`Deck ID from prev session ${deckID}`)
   //   }
-  // };
+  // }
 
   const handleGameStart = async () => {
     const playerOne = playerList[0].player
@@ -99,6 +99,7 @@ const GamePage = () => {
           </div>
         </div>
       )}
+      {/* <Button handleClick={testLocalStorage} buttonType="draw">Save Test</Button> */}
     </div>
   );
 };
