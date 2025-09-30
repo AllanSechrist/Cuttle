@@ -12,38 +12,31 @@ import { useState } from "react";
 import { useLocalStorage } from "~/components/hooks/useLocalStorage";
 
 const GamePage = () => {
+  // CHANGE TO DECK OBJECT
   const [savedDeck, setSavedDeck] = useLocalStorage("savedDeck", "");
   const [deck, setDeck] = useState<boolean>(false);
   const [remainingCardsInDeck, setRemainingCardsInDeck] = useState<number>(0);
+  // CHANGE TO PLAYER OBJECT
   const [playerOneHand, setPlayerOneHand] = useState<PlayingCards[] | []>([]);
   const [playerTwoHand, setPlayerTwoHand] = useState<PlayingCards[] | []>([]);
+  const [playerOneScore, setPlayerOneScore] = useState<number>(0)
+  const [playerTwoScore, setPlayerTwoScore] = useState<number>(0)
   // for now, playerOne will always be the dealer.
   // randomize in the future.
   const [dealer, setDealer] = useState("playerOne");
   // player opposite the dealer always goes first
   const [playerTurn, setPlayerTurn] = useState("playerTwo");
-  // move to own file?
+  // move to own file? Track with state?
   const players = [
-    {
-      player: "playerOne",
-      hand: playerOneHand,
-      score: 0,
-      setHand: (newHand: PlayingCards[]) => setPlayerOneHand(newHand),
-    },
-    {
-      player: "playerTwo",
-      hand: playerTwoHand,
-      score: 0,
-      setHand: (newHand: PlayingCards[]) => setPlayerTwoHand(newHand),
-    },
+    'playerOne', 'playerTwo'
   ];
 
   const handleDeckReset = async () => {
     // return playerOne cards to deck
-    const data = await ReturnCardsToDeck(savedDeck, players[0].player);
+    const data = await ReturnCardsToDeck(savedDeck, players[0]);
     setPlayerOneHand([]);
     // return playerTwo cards to deck
-    await ReturnCardsToDeck(savedDeck, players[1].player);
+    await ReturnCardsToDeck(savedDeck, players[1]);
     setPlayerTwoHand([]);
     // return discard pile to deck
     // return cards in play to deck (board state)
@@ -60,11 +53,11 @@ const GamePage = () => {
     const dealerCards = drawData.cards.slice(6);
     const opponentCards = drawData.cards.slice(0, 6);
     // dealer gets 5 cards, opponent gets 6 cards
-    await AddToPile(savedDeck, players[0].player, dealerCards);
-    await AddToPile(savedDeck, players[1].player, opponentCards);
+    await AddToPile(savedDeck, players[0], dealerCards);
+    await AddToPile(savedDeck, players[1], opponentCards);
     // set player hands
-    const dealerHand = await GetPileCards(savedDeck, players[0].player);
-    const opponentHand = await GetPileCards(savedDeck, players[1].player);
+    const dealerHand = await GetPileCards(savedDeck, players[0]);
+    const opponentHand = await GetPileCards(savedDeck, players[1]);
     setPlayerOneHand(dealerHand);
     setPlayerTwoHand(opponentHand);
   };
@@ -87,24 +80,6 @@ const GamePage = () => {
 
     setDeck(true);
     dealCards();
-
-    // const drawCount = "11";
-    // // deal cards out to players
-    // const drawData = await DrawCards(deckId, drawCount);
-
-    // setRemainingCardsInDeck(drawData.remaining);
-
-    // const dealerCards = drawData.cards.slice(6);
-    // const opponentCards = drawData.cards.slice(0, 6);
-    // // dealer gets 5 cards, opponent gets 6 cards
-    // await AddToPile(deckId, playerOne, dealerCards);
-    // await AddToPile(deckId, playerTwo, opponentCards);
-    // // set player hands
-    // const dealerHand = await GetPileCards(deckId, playerOne);
-    // const opponentHand = await GetPileCards(deckId, playerTwo);
-    // setPlayerOneHand(dealerHand);
-    // setPlayerTwoHand(opponentHand);
-
     // the player opposite the dealer always plays first
   };
 
@@ -141,7 +116,6 @@ const GamePage = () => {
           </div>
         </div>
       )}
-      {/* <Button handleClick={testLocalStorage} buttonType="draw">Save Test</Button> */}
     </div>
   );
 };
