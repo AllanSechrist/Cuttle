@@ -23,13 +23,13 @@ const GamePage = () => {
       player: "playerOne",
       hand: playerOneHand,
       score: 0,
-      setHand: (newHand: PlayingCards[]) => setPlayerOneHand,
+      setHand: (newHand: PlayingCards[]) => setPlayerOneHand(newHand),
     },
     {
       player: "playerTwo",
       hand: playerTwoHand,
       score: 0,
-      setHand: (newHand: PlayingCards[]) => setPlayerTwoHand,
+      setHand: (newHand: PlayingCards[]) => setPlayerTwoHand(newHand),
     },
   ];
 
@@ -51,21 +51,19 @@ const GamePage = () => {
     const data = await CreateNewDeck();
     setDeck(data);
     const drawCount = "11";
+    // deal cards out to players
+    const cardsData = await DrawCards(data.deck_id, drawCount);
+    const dealer = (cardsData).slice(6);
+    const opponent = (cardsData).slice(0, 6);
+    // dealer gets 5 cards, opponent gets 6 cards
+    await AddToPile(data.deck_id, playerOne, dealer);
+    await AddToPile(data.deck_id, playerTwo, opponent);
+    // set player hands
+    const dealerHand = await GetPileCards(data.deck_id, playerOne)
+    const opponentHand = await GetPileCards(data.deck_id, playerTwo)
+    setPlayerOneHand(dealerHand)
+    setPlayerTwoHand(opponentHand)
 
-    if (deck !== null) {
-      // deal cards out to players
-      const cardsData = DrawCards(deck.deck_id, drawCount);
-      const dealer = (await cardsData).slice(7);
-      const opponent = (await cardsData).slice(0, 6);
-      // dealer gets 5 cards, opponent gets 6 cards
-      AddToPile(deck.deck_id, playerOne, dealer);
-      AddToPile(deck.deck_id, playerTwo, opponent);
-      // set player hands
-      const dealerHand = GetPileCards(deck.deck_id, playerOne)
-      const opponentHand = GetPileCards(deck.deck_id, playerTwo)
-      setPlayerOneHand(await dealerHand)
-      setPlayerTwoHand(await opponentHand)
-    }
 
 
     // the player opposite the dealer always plays first
