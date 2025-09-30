@@ -13,6 +13,11 @@ export type DrawResponse = {
   remaining: number
 }
 
+export type DrawResult = {
+  cards: PlayingCards[],
+  remaining: number
+}
+
 export type Deck = {
   success: boolean;
   deck_id: string;
