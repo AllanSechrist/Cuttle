@@ -38,3 +38,11 @@ export type PileResponse = {
   remaining: number,
   piles: Piles
 }
+
+export type ResetDeckResponse = {
+  success: boolean,
+  deck_id: string,
+  shuffled: true,
+  remaining: number,
+  piles: Piles
+}

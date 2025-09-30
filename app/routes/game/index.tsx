@@ -9,7 +9,8 @@ import { useLocalStorage } from "~/components/hooks/useLocalStorage";
 
 const GamePage = () => {
   const [savedDeck, setSavedDeck] = useLocalStorage("savedDeck", "");
-  // const [deckData, setDeckData] = useState<Deck | null>(null);
+  const [deck, setDeck] = useState<boolean>(false);
+  const [remainingCardsInDeck, setRemainingCardsInDeck] = useState<number>(0);
   const [playerOneHand, setPlayerOneHand] = useState<PlayingCards[]>([]);
   const [playerTwoHand, setPlayerTwoHand] = useState<PlayingCards[]>([]);
   // for now, playerOne will always be the dealer.
@@ -18,7 +19,7 @@ const GamePage = () => {
   // player opposite the dealer always goes first
   const [playerTurn, setPlayerTurn] = useState("playerTwo");
   // move to own file?
-  const playerList = [
+  const players = [
     {
       player: "playerOne",
       hand: playerOneHand,
@@ -33,20 +34,9 @@ const GamePage = () => {
     },
   ];
 
-  // const testLocalStorage = async () => {
-  //   if (deckID === "") {
-  //     const data = await CreateNewDeck();
-  //     setDeckData(data)
-  //     setDeckDataID(data.deck_id)
-  //     console.log(`Saved New Deck ID ${deckID}`)
-  //   } else {
-  //     console.log(`Deck ID from prev session ${deckID}`)
-  //   }
-  // }
-
   const handleGameStart = async () => {
-    const playerOne = playerList[0].player;
-    const playerTwo = playerList[1].player;
+    const playerOne = players[0].player;
+    const playerTwo = players[1].player;
     let deckId = null;
     //check if we need to create a new deck
     if (savedDeck === "") {
@@ -62,16 +52,19 @@ const GamePage = () => {
       console.log(`Local Storage deck ID ${savedDeck}`)
     }
 
+    setDeck(true);
+
     const drawCount = "11";
     // deal cards out to players
-    const cardsData = await DrawCards(deckId, drawCount);
-    // DEBUG
-    console.log()
-    const dealer = cardsData.slice(6);
-    const opponent = cardsData.slice(0, 6);
+    const drawData = await DrawCards(deckId, drawCount);
+
+    setRemainingCardsInDeck(drawData.remaining)
+
+    const dealerCards = drawData.cards.slice(6);
+    const opponentCards = drawData.cards.slice(0, 6);
     // dealer gets 5 cards, opponent gets 6 cards
-    await AddToPile(deckId, playerOne, dealer);
-    await AddToPile(deckId, playerTwo, opponent);
+    await AddToPile(deckId, playerOne, dealerCards);
+    await AddToPile(deckId, playerTwo, opponentCards);
     // set player hands
     const dealerHand = await GetPileCards(deckId, playerOne);
     const opponentHand = await GetPileCards(deckId, playerTwo);
@@ -83,7 +76,7 @@ const GamePage = () => {
 
   return (
     <div>
-      {playerOneHand.length === 0 ? (
+      {!deck ? (
         <Button handleClick={handleGameStart} buttonType="deck">
           Start Game
         </Button>
@@ -103,6 +96,7 @@ const GamePage = () => {
               <p>Hand is empty</p>
             )}
           </div>
+          <h2>Cards in deck {remainingCardsInDeck}</h2>
         </div>
       )}
       {/* <Button handleClick={testLocalStorage} buttonType="draw">Save Test</Button> */}

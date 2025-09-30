@@ -1,4 +1,4 @@
-import type { Deck, DrawResponse, DrawResult, PlayingCards } from "~/types";
+import type { Deck, DrawResponse, DrawResult, ResetDeckResponse } from "~/types";
 
 const BASE_URL = import.meta.env.VITE_CARD_API_BASE;
 
@@ -22,5 +22,11 @@ export async function ShuffleDeck(deck:string, remaining=true):Promise<Deck> {
   const res = await fetch(`${BASE_URL}/${deck}/shuffle/?remaining=${remaining}`)
   const data = await (res.json()) as Deck;
 
+  return data
+}
+
+export async function ReturnCardsToDeck(deck_id:string, pile_name:string):Promise<ResetDeckResponse> {
+  const res = await fetch(`${BASE_URL}/${deck_id}/pile/${pile_name}`)
+  const data = await (res.json()) as ResetDeckResponse
   return data
 }
