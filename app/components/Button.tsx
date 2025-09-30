@@ -1,6 +1,7 @@
 const buttonStyles = {
   draw: { style: "btn btn-success"},
   deck: { style: "btn btn-primary"},
+  reset: { style: "btn btn-error"}
 
 };
 

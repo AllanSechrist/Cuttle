@@ -39,7 +39,7 @@ export type PileResponse = {
   piles: Piles
 }
 
-export type ResetDeckResponse = {
+export type ReturnCardsResponse = {
   success: boolean,
   deck_id: string,
   shuffled: true,
