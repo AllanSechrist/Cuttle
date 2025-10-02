@@ -8,7 +8,13 @@ import type { Pile, Deck } from "~/types";
 import type { PlayingCards } from "~/types";
 import Card from "~/components/Card";
 import Button from "~/components/Button";
-import { useState } from "react";
+import { useState, useReducer } from "react";
+import {
+  playerReducer,
+  PlayerOne,
+  PlayerTwo,
+} from "~/game_logic/game_objects/player";
+import type { PlayerState } from "~/game_logic/game_objects/player_types";
 import { useLocalStorage } from "~/components/hooks/useLocalStorage";
 
 const GamePage = () => {
@@ -16,28 +22,16 @@ const GamePage = () => {
   const [savedDeck, setSavedDeck] = useLocalStorage("savedDeck", "");
   const [deck, setDeck] = useState<boolean>(false);
   const [remainingCardsInDeck, setRemainingCardsInDeck] = useState<number>(0);
-  // CHANGE TO PLAYER OBJECT
-  const [playerOneHand, setPlayerOneHand] = useState<PlayingCards[] | []>([]);
-  const [playerTwoHand, setPlayerTwoHand] = useState<PlayingCards[] | []>([]);
-  const [playerOneScore, setPlayerOneScore] = useState<number>(0)
-  const [playerTwoScore, setPlayerTwoScore] = useState<number>(0)
-  // for now, playerOne will always be the dealer.
-  // randomize in the future.
-  const [dealer, setDealer] = useState("playerOne");
-  // player opposite the dealer always goes first
-  const [playerTurn, setPlayerTurn] = useState("playerTwo");
-  // move to own file? Track with state?
-  const players = [
-    'playerOne', 'playerTwo'
-  ];
+  const [playerOne, playerOneDispatch] = useReducer(playerReducer, PlayerOne());
+  const [playerTwo, playerTwoDispatch] = useReducer(playerReducer, PlayerTwo());
 
   const handleDeckReset = async () => {
     // return playerOne cards to deck
-    const data = await ReturnCardsToDeck(savedDeck, players[0]);
-    setPlayerOneHand([]);
+    const data = await ReturnCardsToDeck(savedDeck, playerOne.name);
+    playerOneDispatch({ type: "RESET_HAND" });
     // return playerTwo cards to deck
-    await ReturnCardsToDeck(savedDeck, players[1]);
-    setPlayerTwoHand([]);
+    await ReturnCardsToDeck(savedDeck, playerTwo.name);
+    playerTwoDispatch({ type: "RESET_HAND" });
     // return discard pile to deck
     // return cards in play to deck (board state)
     setRemainingCardsInDeck(data.remaining);
@@ -53,13 +47,13 @@ const GamePage = () => {
     const dealerCards = drawData.cards.slice(6);
     const opponentCards = drawData.cards.slice(0, 6);
     // dealer gets 5 cards, opponent gets 6 cards
-    await AddToPile(savedDeck, players[0], dealerCards);
-    await AddToPile(savedDeck, players[1], opponentCards);
+    await AddToPile(savedDeck, playerOne.name, dealerCards);
+    await AddToPile(savedDeck, playerTwo.name, opponentCards);
     // set player hands
-    const dealerHand = await GetPileCards(savedDeck, players[0]);
-    const opponentHand = await GetPileCards(savedDeck, players[1]);
-    setPlayerOneHand(dealerHand);
-    setPlayerTwoHand(opponentHand);
+    const dealerHand = await GetPileCards(savedDeck, playerOne.name);
+    const opponentHand = await GetPileCards(savedDeck, playerTwo.name);
+    playerOneDispatch({ type: "INITIAL_HAND", cards: dealerHand });
+    playerTwoDispatch({ type: "INITIAL_HAND", cards: opponentHand });
   };
 
   const handleGameStart = async () => {
@@ -92,15 +86,15 @@ const GamePage = () => {
       ) : (
         <div className="flex flex-col items-center justify-center space-y-4 bg-base-300">
           <div className="flex items-center justify-center">
-            {playerOneHand.length > 0 ? (
-              playerOneHand.map((card) => <Card key={card.code} card={card} />)
+            {playerOne.hand.length > 0 ? (
+              playerOne.hand.map((card) => <Card key={card.code} card={card} />)
             ) : (
               <p>Hand is empty</p>
             )}
           </div>
           <div className="flex items-center justify-center">
-            {playerTwoHand.length > 0 ? (
-              playerTwoHand.map((card) => <Card key={card.code} card={card} />)
+            {playerTwo.hand.length > 0 ? (
+              playerTwo.hand.map((card) => <Card key={card.code} card={card} />)
             ) : (
               <p>Hand is empty</p>
             )}
