@@ -1,7 +1,6 @@
 import type {
   Deck,
   DrawResponse,
-  DrawResult,
   ReturnCardsResponse,
 } from "~/types";
 
@@ -16,13 +15,13 @@ export async function CreateNewDeck(): Promise<Deck> {
 export async function DrawCards(
   deck_id: string,
   count = "1"
-): Promise<DrawResult> {
+): Promise<DrawResponse> {
   // returns a draw response from the API. This includes information about the card(s)
   // the deck id and how many cards remain in the deck after the draw.
   const res = await fetch(`${BASE_URL}/${deck_id}/draw/?count=${count}`);
   const data = (await res.json()) as DrawResponse;
 
-  return { cards: data.cards, remaining: data.remaining };
+  return data;
 }
 
 export async function ShuffleDeck(

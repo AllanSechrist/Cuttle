@@ -4,7 +4,6 @@ import {
   ReshuffleCards,
 } from "~/game_logic/cards/deck";
 import type { PlayingCards } from "~/types";
-import type { PlayerState } from "~/components/reducers/player_types";
 import { AddToPile, GetPileCards } from "~/game_logic/cards/pile";
 import Card from "~/components/Card";
 import Button from "~/components/Button";
@@ -29,6 +28,7 @@ const GamePage = () => {
     const cardCodes = cards.join(",");
     return cardCodes
   }
+
   const dealCards = async (deck_id: string) => {
     const drawCount = "11";
     // deal cards out to players
@@ -56,19 +56,29 @@ const GamePage = () => {
     setRemainingCardsInDeck(data.remaining);
   };
 
+  const testDeckIdIsValid = async () => {
+    const data = await ReshuffleCards(savedDeck);
+    return data.success
+  }
 
   const handleGameStart = async () => {
+    // save the deck id from the response so we don't have
+    // to wait for an update
     let deckId = null;
     //check if we need to create a new deck
     if (savedDeck === "") {
       const newDeck = await CreateNewDeck();
-      // setDeckData(newDeck);
       setSavedDeck(newDeck.deck_id);
       deckId = newDeck.deck_id;
-      //DEBUG
-      console.log(`New deck ID ${savedDeck}`);
     } else {
       deckId = savedDeck;
+      // check that deck id is still valid
+      // card API removes deck ids after 2 weeks of inactivity
+      if (!testDeckIdIsValid) {
+        const newDeck = await CreateNewDeck();
+        setSavedDeck(newDeck.deck_id);
+        deckId = newDeck.deck_id
+      }
       //DEBUG
       console.log(`Local Storage deck ID ${savedDeck}`);
     }
