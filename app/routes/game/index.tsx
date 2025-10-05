@@ -4,8 +4,6 @@ import {
   ReturnCardsToDeck,
 } from "~/game_logic/cards/deck";
 import { AddToPile, GetPileCards } from "~/game_logic/cards/pile";
-import type { Pile, Deck } from "~/types";
-import type { PlayingCards } from "~/types";
 import Card from "~/components/Card";
 import Button from "~/components/Button";
 import { useState, useReducer } from "react";
@@ -13,8 +11,7 @@ import {
   playerReducer,
   PlayerOne,
   PlayerTwo,
-} from "~/game_logic/game_objects/player";
-import type { PlayerState } from "~/game_logic/game_objects/player_types";
+} from "~/components/reducers/player";
 import { useLocalStorage } from "~/components/hooks/useLocalStorage";
 
 const GamePage = () => {
@@ -25,19 +22,7 @@ const GamePage = () => {
   const [playerOne, playerOneDispatch] = useReducer(playerReducer, PlayerOne());
   const [playerTwo, playerTwoDispatch] = useReducer(playerReducer, PlayerTwo());
 
-  const handleDeckReset = async () => {
-    // return playerOne cards to deck
-    const data = await ReturnCardsToDeck(savedDeck, playerOne.name);
-    playerOneDispatch({ type: "RESET_HAND" });
-    // return playerTwo cards to deck
-    await ReturnCardsToDeck(savedDeck, playerTwo.name);
-    playerTwoDispatch({ type: "RESET_HAND" });
-    // return discard pile to deck
-    // return cards in play to deck (board state)
-    setRemainingCardsInDeck(data.remaining);
-  };
-
-  const dealCards = async () => {
+  const dealCards = async (deck_id: string) => {
     const drawCount = "11";
     // deal cards out to players
     const drawData = await DrawCards(savedDeck, drawCount);
@@ -47,14 +32,27 @@ const GamePage = () => {
     const dealerCards = drawData.cards.slice(6);
     const opponentCards = drawData.cards.slice(0, 6);
     // dealer gets 5 cards, opponent gets 6 cards
-    await AddToPile(savedDeck, playerOne.name, dealerCards);
-    await AddToPile(savedDeck, playerTwo.name, opponentCards);
+    await AddToPile(deck_id, playerOne.name, dealerCards);
+    await AddToPile(deck_id, playerTwo.name, opponentCards);
     // set player hands
     const dealerHand = await GetPileCards(savedDeck, playerOne.name);
     const opponentHand = await GetPileCards(savedDeck, playerTwo.name);
     playerOneDispatch({ type: "INITIAL_HAND", cards: dealerHand });
     playerTwoDispatch({ type: "INITIAL_HAND", cards: opponentHand });
   };
+
+  const handleDeckReset = async () => {
+    // return playerOne cards to deck
+    await ReturnCardsToDeck(savedDeck, playerOne.name);
+    playerOneDispatch({ type: "RESET_HAND" });
+    // return playerTwo cards to deck
+    const data = await ReturnCardsToDeck(savedDeck, playerTwo.name);
+    playerTwoDispatch({ type: "RESET_HAND" });
+    // return discard pile to deck
+    // return cards in play to deck (board state)
+    setRemainingCardsInDeck(data.remaining);
+  };
+
 
   const handleGameStart = async () => {
     let deckId = null;
@@ -73,7 +71,7 @@ const GamePage = () => {
     }
 
     setDeck(true);
-    dealCards();
+    await dealCards(deckId);
     // the player opposite the dealer always plays first
   };
 
@@ -104,7 +102,7 @@ const GamePage = () => {
             <Button handleClick={handleDeckReset} buttonType="reset">
               Reset Deck
             </Button>
-            <Button handleClick={dealCards} buttonType="deck">
+            <Button handleClick={() => dealCards(savedDeck)} buttonType="deck">
               New Game?
             </Button>
           </div>

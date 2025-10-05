@@ -1,4 +1,5 @@
 import type { Route } from "./+types/index";
+import { NavLink } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Cuttle" }, { name: "description", content: "Play Cuttle" }];
@@ -13,7 +14,7 @@ export default function Home() {
           <p className="py-6">
             Testy Mc Test Test
           </p>
-          <button className="btn btn-primary">Get Started</button>
+          <NavLink to="/game" className="btn btn-primary">Start Game</NavLink>
         </div>
       </div>
     </div>
