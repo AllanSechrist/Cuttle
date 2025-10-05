@@ -9,11 +9,8 @@ export async function AddToPile(
   // This function will also create a new pile if [name] does not already exist.
   deck_id:string,
   name: string,
-  cardsData: PlayingCards[]
+  cardCodes: string
 ): Promise<PileResponse> {
-  // extract card object code value then convert that list into a string.
-  const cards = cardsData.map(card => card.code)
-  const cardCodes = cards.join(",");
   const res = await fetch(
     `${BASE_URL}/${deck_id}/pile/${name}/add/?cards=${cardCodes}`
   );

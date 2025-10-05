@@ -38,11 +38,18 @@ export async function ShuffleDeck(
   return data;
 }
 
-export async function ReturnCardsToDeck(
+export async function ReturnPileToDeck(
   deck_id: string,
   pile_name: string
 ): Promise<ReturnCardsResponse> {
   const res = await fetch(`${BASE_URL}/${deck_id}/pile/${pile_name}/return`);
   const data = (await res.json()) as ReturnCardsResponse;
+  return data;
+}
+
+export async function ReshuffleCards(deck_id: string): Promise<Deck> {
+  // Shuffles all cards from all piles back into the deck resetting the deck
+  const res = await fetch(`${BASE_URL}/${deck_id}/shuffle`);
+  const data = (await res.json()) as Deck;
   return data;
 }

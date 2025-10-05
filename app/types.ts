@@ -1,7 +1,7 @@
 export type PlayingCards = {
   code: string;
   image: string;
-  images: object;
+  images?: object;
   value: string;
   suit: string;
 }
