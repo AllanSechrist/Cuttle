@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { GameProvider } from "./components/context/game/game";
 
 import type { Route } from "./+types/root";
 import "./app.css";
@@ -48,7 +49,11 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <GameProvider>
+      <Outlet />
+    </GameProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
